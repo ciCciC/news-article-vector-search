@@ -87,20 +87,10 @@
     <input type="text" size="100" id="search" name="search"
            placeholder="Semantic search... e.g. kunstmatige intelligentie en computers"
            oninput="searchArticles(this.value)">
-    <!--        <button onclick="searchArticles(document.getElementById('search').value)">Search</button>-->
+<!--    <button onclick="searchArticles(document.getElementById('search').value)">Search</button>-->
 </div>
 
 <div class="grid-container">
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
-    <div class="grid-item"></div>
 </div>
 
 <script>
@@ -109,14 +99,16 @@
         query_article(q, limit)
             .then((data) => {
                 const result = data['result']
-                console.log(result[0])
-                const items = document.getElementsByClassName('grid-item')
+                const container = document.getElementsByClassName('grid-container')[0]
+                container.textContent = ''
 
                 for (let i = 0; i < result.length; i++) {
-                    const gridItem = items.item(i)
+                    const gridItem = document.createElement('div')
+                    gridItem.className = 'grid-item'
                     gridItem.textContent = ''
                     const articleEl = constructEl(result[i])
                     gridItem.appendChild(articleEl)
+                    container.appendChild(gridItem)
                 }
             })
     }
@@ -130,7 +122,6 @@
         pageLink.href = payload['pageLink']
         const img = document.createElement("img");
         img.src = payload['imageLink']
-
         pageLink.appendChild(img)
 
         const score = document.createElement("p");
