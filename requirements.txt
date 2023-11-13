@@ -1,0 +1,11 @@
+jupyter
+requests
+pandas
+numpy
+matplotlib
+sentence-transformers
+qdrant-client
+fastapi
+uvicorn
+fastembed
+tqdm

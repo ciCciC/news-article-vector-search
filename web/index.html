@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="api.js"></script>
+    <title>NRC News empowered by AI-search</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .search-container {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        label {
+            margin-right: 10px;
+            color: #333;
+        }
+
+        #search {
+            text-align: center;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        #search:focus {
+            text-align: center;
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        /*button {*/
+        /*    padding: 8px 16px;*/
+        /*    background-color: #007BFF;*/
+        /*    color: #fff;*/
+        /*    border: none;*/
+        /*    border-radius: 4px;*/
+        /*    cursor: pointer;*/
+        /*    font-size: 16px;*/
+        /*}*/
+
+        /*button:hover {*/
+        /*    background-color: #0056b3;*/
+        /*}*/
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 5px;
+        }
+
+        .grid-item {
+            border: 1px solid #dfdfdf;
+            padding: 0;
+            text-align: center;
+        }
+
+        .article {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .article img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body onload="searchArticles('kunstmatige intelligentie en computers')">
+
+<div class="search-container">
+    <label for="search"></label>
+    <input type="text" size="100" id="search" name="search"
+           placeholder="Semantic search... e.g. kunstmatige intelligentie en computers"
+           oninput="searchArticles(this.value)">
+    <!--        <button onclick="searchArticles(document.getElementById('search').value)">Search</button>-->
+</div>
+
+<div class="grid-container">
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+</div>
+
+<script>
+    function searchArticles(q) {
+        const limit = 10
+        query_article(q, limit)
+            .then((data) => {
+                const result = data['result']
+                console.log(result[0])
+                const items = document.getElementsByClassName('grid-item')
+
+                for (let i = 0; i < result.length; i++) {
+                    const gridItem = items.item(i)
+                    gridItem.textContent = ''
+                    const articleEl = constructEl(result[i])
+                    gridItem.appendChild(articleEl)
+                }
+            })
+    }
+
+    function constructEl(data) {
+        const payload = data['payload']
+        const parent = document.createElement("div");
+        parent.className = 'article'
+
+        const pageLink = document.createElement("a");
+        pageLink.href = payload['pageLink']
+        const img = document.createElement("img");
+        img.src = payload['imageLink']
+
+        pageLink.appendChild(img)
+
+        const score = document.createElement("p");
+        score.textContent = 'SCORE: ' + Math.round((data['score'] + Number.EPSILON) * 100) / 100
+        const header = document.createElement("p");
+        header.textContent = payload['year'] + ' | ' + payload['category'].toUpperCase()
+        header.style.color = 'darkred'
+        const topic = document.createElement("p");
+        topic.textContent = payload['topic']
+        const title = document.createElement("h3");
+        title.textContent = payload['title']
+        const teaser = document.createElement("p");
+        teaser.textContent = data['document']
+
+        parent.appendChild(pageLink)
+        parent.appendChild(score)
+        parent.appendChild(header)
+        parent.appendChild(topic)
+        parent.appendChild(title)
+        parent.appendChild(teaser)
+
+        return parent
+    }
+</script>
+</body>
+</html>
