@@ -23,6 +23,13 @@ async def search_article(q: str, limit: int):
     }
 
 
+@app.get("/nrc/recommend")
+async def recommend_articles(like: int = None, limit: int = 5):
+    return {
+        "result": neural_searcher.recommend(like=like, limit=limit)
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
 

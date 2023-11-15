@@ -63,8 +63,14 @@
 
         .grid-item {
             border: 1px solid #dfdfdf;
+            border-radius: 20px;
             padding: 0;
             text-align: center;
+        }
+
+        .grid-item:hover{
+            box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
+            background-color: #86fcff;
         }
 
         .article {
@@ -75,28 +81,41 @@
 
         .article img {
             max-width: 100%;
+            border-radius: 20px;
             height: auto;
             margin-bottom: 0;
         }
+
+        #promote_recommend{
+            padding: 20px;
+        }
     </style>
 </head>
-<body onload="searchArticles('kunstmatige intelligentie en computers')">
+<body onload="renderSearchArticles('kunstmatige intelligentie en computers')">
 
 <div class="search-container">
     <label for="search"></label>
-    <input type="text" size="100" id="search" name="search"
+    <input type="text" size="80" id="search" name="search"
            placeholder="Semantic search... e.g. kunstmatige intelligentie en computers"
-           oninput="searchArticles(this.value)">
+           oninput="renderSearchArticles(this.value)">
+    <p id="promote_recommend">Search + Click = <b>**Recommendations**</b></p>
 <!--    <button onclick="searchArticles(document.getElementById('search').value)">Search</button>-->
 </div>
 
 <div class="grid-container">
 </div>
 
+<div class="search-container">
+    <label><b>**Recommendations**</b></label>
+</div>
+
+<div class="grid-container">
+</div>
+
 <script>
-    function searchArticles(q) {
+    function renderSearchArticles(q) {
         const limit = 10
-        query_article(q, limit)
+        queryArticles(q, limit)
             .then((data) => {
                 const result = data['result']
                 const container = document.getElementsByClassName('grid-container')[0]
@@ -106,6 +125,28 @@
                     const gridItem = document.createElement('div')
                     gridItem.className = 'grid-item'
                     gridItem.textContent = ''
+                    gridItem.addEventListener('click', () => renderRecommendArticles(result[i]['id']))
+
+                    const articleEl = constructEl(result[i])
+                    gridItem.appendChild(articleEl)
+                    container.appendChild(gridItem)
+                }
+            })
+    }
+
+    function renderRecommendArticles(like){
+        const limit = 10
+        recommendArticles(like, limit)
+            .then((data) => {
+                const result = data['result']
+                const container = document.getElementsByClassName('grid-container')[1]
+                container.textContent = ''
+
+                for (let i = 0; i < result.length; i++) {
+                    const gridItem = document.createElement('div')
+                    gridItem.className = 'grid-item'
+                    gridItem.textContent = ''
+
                     const articleEl = constructEl(result[i])
                     gridItem.appendChild(articleEl)
                     container.appendChild(gridItem)
@@ -118,11 +159,11 @@
         const parent = document.createElement("div");
         parent.className = 'article'
 
-        const pageLink = document.createElement("a");
-        pageLink.href = payload['pageLink']
+        // const pageLink = document.createElement("a");
+        // pageLink.href = payload['pageLink']
         const img = document.createElement("img");
         img.src = payload['imageLink']
-        pageLink.appendChild(img)
+        // pageLink.appendChild(img)
 
         const score = document.createElement("p");
         score.textContent = 'SCORE: ' + Math.round((data['score'] + Number.EPSILON) * 100) / 100
@@ -136,7 +177,8 @@
         const teaser = document.createElement("p");
         teaser.textContent = data['document']
 
-        parent.appendChild(pageLink)
+        // parent.appendChild(pageLink)
+        parent.appendChild(img)
         parent.appendChild(score)
         parent.appendChild(header)
         parent.appendChild(topic)

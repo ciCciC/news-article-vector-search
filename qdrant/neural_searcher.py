@@ -27,3 +27,13 @@ class NeuralSearcher:
             limit=limit
         )
         return hits
+
+    def recommend(self, like=None, limit=5) -> List:
+        positive_likes = [10, 20, 100] if like is None else [like]
+
+        return self.qdrant_client.recommend(
+            collection_name=self.collection_name,
+            positive=positive_likes,
+            limit=limit
+
+        )
